@@ -2,7 +2,7 @@
 set -e
 
 # Define directories
-BASE_DIR="/Users/guangdewang/github/airflow-demo"
+BASE_DIR="$PWD"
 export AIRFLOW_HOME="$BASE_DIR/airflow_home"
 export AIRFLOW__CORE__LOAD_EXAMPLES=False
 

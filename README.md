@@ -146,7 +146,21 @@ export AIRFLOW_HOME="$(pwd)/airflow_home"
 uv run python airflow_home/dags/parquet_to_postgres_dag.py
 ```
 
+## ⚙️ Environment Configuration (.env)
+
+The project includes a `.env` file at the root to configure the path structure dynamically:
+- `PROJECT_DIR`: Defines the absolute path to this project directory. It is used to compute paths for input and output files.
+
+When you run `./run_demo.sh`, it loads the `.env` file and exports `PROJECT_DIR` and resolves `AIRFLOW_HOME` based on it.
+
+In the DAG file, the path is resolved dynamically via:
+```python
+BASE_DIR = os.getenv('PROJECT_DIR', os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+```
+This ensures the pipeline runs correctly even if the environment variable is not explicitly set.
+
 ---
+
 
 ## 🔍 Verifying the Loaded Data
 

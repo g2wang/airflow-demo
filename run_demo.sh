@@ -1,10 +1,26 @@
 #!/bin/bash
 set -e
 
-# Define directories
-BASE_DIR="$PWD"
-export AIRFLOW_HOME="$BASE_DIR/airflow_home"
+# Load environment variables from .env file if it exists
+if [ -f .env ]; then
+    echo "Loading environment from .env..."
+    export $(grep -v '^#' .env | xargs)
+fi
+
+# Fallback to current working directory if PROJECT_DIR is not set
+if [ -z "$PROJECT_DIR" ]; then
+    PROJECT_DIR="$PWD"
+fi
+
+# Fallback to default password if POSTGRES_PASSWORD is not set
+if [ -z "$POSTGRES_PASSWORD" ]; then
+    POSTGRES_PASSWORD="postgres"
+fi
+
+echo "Using PROJECT_DIR: $PROJECT_DIR"
+export AIRFLOW_HOME="$PROJECT_DIR/airflow_home"
 export AIRFLOW__CORE__LOAD_EXAMPLES=False
+
 
 # 1. Start PostgreSQL via Docker Compose
 echo "Starting PostgreSQL container..."
@@ -42,7 +58,7 @@ uv run airflow connections add 'postgres_default' \
     --conn-type 'postgres' \
     --conn-host 'localhost' \
     --conn-login 'postgres' \
-    --conn-password 'postgres' \
+    --conn-password "$POSTGRES_PASSWORD" \
     --conn-schema 'analytics' \
     --conn-port '5432'
 
